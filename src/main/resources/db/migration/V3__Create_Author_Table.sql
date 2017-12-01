@@ -1,0 +1,3 @@
+CREATE TABLE author(
+name VARCHAR PRIMARY KEY
+);
