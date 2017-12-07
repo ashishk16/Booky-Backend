@@ -1,0 +1,43 @@
+--CREATE TABLE Book (
+--id VARCHAR  PRIMARY KEY,
+--title VARCHAR(100),
+--authors VARCHAR ,
+--categories VARCHAR ,
+--description VARCHAR ,
+--thumbnail VARCHAR,
+--smallThumbnail VARCHAR,
+--publisher VARCHAR  ,
+--publishedDate VARCHAR ,
+--noOfCopies INTEGER  ,
+--averageRating REAL,
+--ratingCount INTEGER  ,
+--price REAL
+--);
+--
+--CREATE TABLE Copy(
+--copyId VARCHAR NOT NULL PRIMARY KEY,
+--status VARCHAR,
+--id VARCHAR references Book(id)
+--);
+--
+--CREATE TABLE author(
+--id SERIAL  PRIMARY KEY,
+--name VARCHAR NOT NULL UNIQUE
+--);
+--
+--CREATE TABLE book_authors(
+--book_id VARCHAR references book(id),
+--author_id INTEGER   references author(id),
+--PRIMARY KEY(book_id, author_id)
+--);
+--
+--CREATE TABLE category (
+--id SERIAL PRIMARY KEY ,
+--name VARCHAR NOT NULL UNIQUE
+--);
+--
+--CREATE TABLE book_categories(
+--book_id VARCHAR references book(id),
+--category_id INTEGER references category(id),
+--PRIMARY KEY(book_id, category_id)
+--);

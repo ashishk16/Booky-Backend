@@ -37,10 +37,10 @@ public class BookController {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/Book/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable String id){
-        if(bookService.delete(id))
+        if(bookService.delete(id)) {
             return ResponseEntity.status(HttpStatus.OK).build();
-
-        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).build();
+        }
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
     private boolean ValidatePayload(Book book) {

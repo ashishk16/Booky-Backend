@@ -30,8 +30,4 @@ public class  Copy {
         return status;
     }
 
-
-    public Book getBook() {
-        return book;
-    }
 }

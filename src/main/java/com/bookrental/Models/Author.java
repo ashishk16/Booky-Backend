@@ -6,7 +6,11 @@ import java.util.Set;
 @Entity
 @Table(name="author")
 public class Author {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO )
+    int id;
+
     @Column(unique = true)
     String name;
 
@@ -14,6 +18,14 @@ public class Author {
     Set<Book> books;
 
     public Author() {
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public Author(String authorName, Set<Book> books) {
@@ -29,7 +41,8 @@ public class Author {
         return name;
     }
 
-    public Set<Book> getBooks() {
-        return books;
+    @Override
+    public String toString() {
+        return "Name: "+name;
     }
 }

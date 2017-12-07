@@ -8,6 +8,9 @@ import java.util.Set;
 public class Category {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO )
+    int id;
+
     @Column(unique = true)
     String name;
 
@@ -26,8 +29,12 @@ public class Category {
         this.books = books;
     }
 
-    public Set<Book> getBooks() {
-        return books;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
