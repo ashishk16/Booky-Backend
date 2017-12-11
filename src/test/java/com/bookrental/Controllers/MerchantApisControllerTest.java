@@ -1,8 +1,6 @@
 package com.bookrental.Controllers;
 
-import com.bookrental.Models.Author;
-import com.bookrental.Models.Book;
-import com.bookrental.Models.Category;
+import com.bookrental.Models.*;
 import com.bookrental.Services.BookService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,8 +23,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest(value = BookController.class, secure = false)
-public class BookControllerTest {
+@WebMvcTest(value = MerchantController.class, secure = false)
+public class MerchantApisControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -173,5 +171,39 @@ public class BookControllerTest {
 
         //Assert
         assertEquals(HttpStatus.NOT_FOUND.value(), result.getResponse().getStatus());
+    }
+
+    @Test
+    public void shouldReturnAllCopiesOfABook() throws Exception {
+        //Arrange
+        String expectedJson = "[{\"id\":\"id:1\"," +
+                "\"status\":\"Available\"" +
+                "},{\"id\":\"id:2\"," +
+                "\"status\":\"Rented\"}]";
+        List<Copy> copies = Arrays.asList(new Copy("id:1", CopyStatus.Available, new Book()), new Copy("id:2", CopyStatus.Rented, new Book()));
+        when(bookService.getCopiesByBookId(Mockito.anyString())).thenReturn(copies);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/Book/zyTCAlFPjgYg/Copy").accept(MediaType.APPLICATION_JSON);
+
+        //Act
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        //Assert
+        JSONAssert.assertEquals(expectedJson, result.getResponse().getContentAsString(), false);
+    }
+
+    @Test
+    public void shouldReturnParticularCopyOfTheBook() throws Exception {
+        //Arrange
+        String expectedJson = "{\"id\":\"id:1\"," +
+                "\"status\":\"Available\"}";
+        Copy copy = new Copy("id:1", CopyStatus.Available, new Book());
+        when(bookService.getCopyById("id:1")).thenReturn(copy);
+        RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/Copy/id:1").accept(MediaType.APPLICATION_JSON);
+
+        //Act
+        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+
+        //Assert
+        assertEquals(expectedJson, result.getResponse().getContentAsString());
     }
 }

@@ -1,6 +1,5 @@
 package com.bookrental.IntegrationTests;
 
-import com.bookrental.BookApiApplication;
 import com.bookrental.Models.Author;
 import com.bookrental.Models.Book;
 import com.bookrental.Models.Category;
@@ -25,8 +24,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Set;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = BookApiApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class BookApiIntegrationTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class MerchantIntegrationTest {
     @Autowired
     BookService bookService;
     @Autowired
@@ -45,7 +44,7 @@ public class BookApiIntegrationTest {
 
 //    EmbeddedDatabase db;
 //
-//    public BookApiIntegrationTest() {
+//    public MerchantIntegrationTest() {
 //        db = new EmbeddedDatabaseBuilder()
 //                .setType(EmbeddedDatabaseType.H2)
 //                .build();
@@ -66,15 +65,12 @@ public class BookApiIntegrationTest {
                 2,
                 3.5,
                 20);
-
         bookService.add(book);
     }
 
     @After
     public void cleanUp(){
         bookRepository.deleteAll();
-        authorRepository.deleteAll();
-        categoryRepository.deleteAll();
     }
 
     @Test

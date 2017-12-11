@@ -26,6 +26,10 @@ public class  Copy {
         return id;
     }
 
+    public void setStatus(CopyStatus status) {
+        this.status = status;
+    }
+
     public CopyStatus getStatus() {
         return status;
     }

@@ -3,7 +3,6 @@ package com.bookrental.Models;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.Arrays;
 import java.util.Set;
 
 
@@ -11,7 +10,7 @@ public class BookTest {
     private Book book;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp(){
         book = new Book("zyTCAlFPjgYC",
                 "The Google Story",
                 Set.of(new Author("David A. Vise"),new Author("Mark Malseed")),
