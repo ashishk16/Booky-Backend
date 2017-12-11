@@ -8,7 +8,7 @@ import java.util.Set;
 public class Author {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     int id;
 
     @Column(unique = true)
@@ -39,10 +39,5 @@ public class Author {
 
     public String getname() {
         return name;
-    }
-
-    @Override
-    public String toString() {
-        return "Name: "+name;
     }
 }

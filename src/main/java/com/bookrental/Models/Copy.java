@@ -29,5 +29,4 @@ public class  Copy {
     public CopyStatus getStatus() {
         return status;
     }
-
 }
