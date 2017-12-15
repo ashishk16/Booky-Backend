@@ -1,8 +1,7 @@
 package com.bookrental.IntegrationTests;
 
-import com.bookrental.Models.Author;
+import com.bookrental.BookBuilder.BookBuilder;
 import com.bookrental.Models.Book;
-import com.bookrental.Models.Category;
 import com.bookrental.Repositories.AuthorRepository;
 import com.bookrental.Repositories.BookRepository;
 import com.bookrental.Repositories.CategoryRepository;
@@ -20,8 +19,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Set;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -42,29 +39,10 @@ public class MerchantIntegrationTest {
 
     private HttpHeaders headers = new HttpHeaders();
 
-//    EmbeddedDatabase db;
-//
-//    public MerchantIntegrationTest() {
-//        db = new EmbeddedDatabaseBuilder()
-//                .setType(EmbeddedDatabaseType.H2)
-//                .build();
-//    }
 
     @Before
     public void setup(){
-        Book book = new Book("zyTCAlFPjgYC",
-                "The Google Story",
-                Set.of(new Author("David A. Vise"),new Author("Mark Malseed")),
-                Set.of(new Category("Business & Economics / Entrepreneurship"), new Category("Computers / Information Technology"), new Category("History / Modern / 20th Century")),
-                "\"Here is the story behind one of the most remarkable Internet successes of our time. Based on scrupulous research and extraordinary access to Google",
-                "http://books.google.com/books/content?id=zyTCAlFPjgYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE70pwzDs7di2l10gDISoQ9eAYlDDUJS1_RaIoansAZS2oPOHM0lgxj2OLvAb1NL0SVyx1pSOFLfv42uuMYlhZ-obp-C4UmDKrFfSFa-0s-WQ-7qSDdxOPwZOueRQcl-W6enWgsKr&source=gbs_api",
-                "http://books.google.com/books/content?id=zyTCAlFPjgYC&printsec=frontcover&img=1&zoom=5&imgtk=AFLRE72jG1eJOZ2lnI3TNwKGK8uSV3h7Igy_0ObYNp5SbXjTlnYmPGxPA9joI2RSyx8AYuk56AmWnbA6NAAI4PxkdUNe6-5iLtoHUBp2abMknLzLezbbjCR8nXw2qaLb0qRPgVs2z9eC&source=gbs_api",
-                "Random House Publishing Group",
-                "2005-11-15",
-                50,
-                2,
-                3.5,
-                20);
+        Book book = new BookBuilder().setNoOfCopies(2).buildBook();
         bookService.add(book);
     }
 
@@ -76,7 +54,7 @@ public class MerchantIntegrationTest {
     @Test
     public void shouldReturnListOfAllBooks() throws JSONException {
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/Book"), HttpMethod.GET,
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books"), HttpMethod.GET,
                 entity, String.class);
 
         String books = "[{\"id\":\"zyTCAlFPjgYC\"," +
@@ -94,12 +72,13 @@ public class MerchantIntegrationTest {
                 "\"ratingCount\":20}]";
 
         JSONAssert.assertEquals(books, responseEntity.getBody(), false);
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     public void shouldReturnBookById() throws JSONException {
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/Book/zyTCAlFPjgYC"), HttpMethod.GET,
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books/zyTCAlFPjgYC"), HttpMethod.GET,
                 entity, String.class);
 
         String book = "{\"id\":\"zyTCAlFPjgYC\"," +
@@ -117,29 +96,17 @@ public class MerchantIntegrationTest {
                 "\"ratingCount\":20}";
 
         JSONAssert.assertEquals(book, responseEntity.getBody(), false);
-
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
     public void shouldReturnCREATEDHttpStatusCodeOnSuccessfulInsertionOfNewBook(){
         //Arrange
-        Book newBook = new Book("zyTCAlFPjgYf",
-                "The Google Story",
-                Set.of(new Author("David A. Vise"),new Author("Mark Malseed")),
-                Set.of(new Category("Business & Economics / Entrepreneurship"), new Category("Computers / Information Technology"), new Category("History / Modern / 20th Century")),
-                "\"Here is the story behind one of the most remarkable Internet successes of our time. Based on scrupulous research and extraordinary access to Google",
-                "http://books.google.com/books/content?id=zyTCAlFPjgYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE70pwzDs7di2l10gDISoQ9eAYlDDUJS1_RaIoansAZS2oPOHM0lgxj2OLvAb1NL0SVyx1pSOFLfv42uuMYlhZ-obp-C4UmDKrFfSFa-0s-WQ-7qSDdxOPwZOueRQcl-W6enWgsKr&source=gbs_api",
-                "http://books.google.com/books/content?id=zyTCAlFPjgYC&printsec=frontcover&img=1&zoom=5&imgtk=AFLRE72jG1eJOZ2lnI3TNwKGK8uSV3h7Igy_0ObYNp5SbXjTlnYmPGxPA9joI2RSyx8AYuk56AmWnbA6NAAI4PxkdUNe6-5iLtoHUBp2abMknLzLezbbjCR8nXw2qaLb0qRPgVs2z9eC&source=gbs_api",
-                "Random House Publishing Group",
-                "2005-11-15",
-                50,
-                2,
-                3.5,
-                20);
+        Book newBook = new BookBuilder().setId("zyTCAlFPjgYf").buildBook();
         HttpEntity<Book> entity = new HttpEntity<Book>(newBook, headers);
 
         //Act
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/Book"),
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books"),
                 HttpMethod.POST, entity, String.class);
 
         //Assert
@@ -154,7 +121,7 @@ public class MerchantIntegrationTest {
         HttpEntity<Book> entity = new HttpEntity<Book>(newBook, headers);
 
         //Act
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/Book"),
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books"),
                 HttpMethod.POST, entity, String.class);
 
         //Assert
@@ -167,7 +134,7 @@ public class MerchantIntegrationTest {
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
         //Act
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/Book/zyTCAlFPjgYC"),
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books/zyTCAlFPjgYC"),
                 HttpMethod.DELETE, entity, String.class);
 
         //Assert
@@ -180,11 +147,46 @@ public class MerchantIntegrationTest {
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
         //Act
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/Book/zyTCAlFPjgYg"),
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books/zyTCAlFPjgYg"),
                 HttpMethod.DELETE, entity, String.class);
 
         //Assert
         Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void shouldReturnAllCopiesOfParticularBook() throws JSONException {
+        //Arrange
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        String copies = "[{" +
+                "\"id\":\"zyTCAlFPjgYC:1\"," +
+                "\"status\":\"Available\"}," +
+                "{\"id\":\"zyTCAlFPjgYC:2\"," +
+                "\"status\":\"Available\"}]";
+
+        //Act
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books/zyTCAlFPjgYC/copies"),
+                HttpMethod.GET, entity, String.class);
+
+        //Assert
+        JSONAssert.assertEquals(copies, responseEntity.getBody(), false);
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void shouldReturnACopyOfParticularBookByCopyId() throws JSONException {
+        //Arrange
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+        String copies = "{\"id\":\"zyTCAlFPjgYC:2\"," +
+                "\"status\":\"Available\"}";
+
+        //Act
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createURLWithPort("/books/copies/zyTCAlFPjgYC:2"),
+                HttpMethod.GET, entity, String.class);
+
+        //Assert
+        JSONAssert.assertEquals(copies, responseEntity.getBody(), false);
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     private String createURLWithPort(String api) {

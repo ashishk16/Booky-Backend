@@ -1,5 +1,6 @@
 package com.bookrental.IntegrationTests;
 
+import com.bookrental.BookBuilder.BookBuilder;
 import com.bookrental.Models.Author;
 import com.bookrental.Models.Book;
 import com.bookrental.Models.Category;
@@ -44,19 +45,7 @@ public class CustomerApisIntegrationTest {
 
     @Before
     public void setUp(){
-        Book book = new Book("zyTCAlFPjgYC",
-                "The Google Story",
-                Set.of(new Author("David A. Vise"),new Author("Mark Malseed")),
-                Set.of(new Category("Business & Economics / Entrepreneurship"), new Category("Computers / Information Technology"), new Category("History / Modern / 20th Century")),
-                "\"Here is the story behind one of the most remarkable Internet successes of our time. Based on scrupulous research and extraordinary access to Google",
-                "http://books.google.com/books/content?id=zyTCAlFPjgYC&printsec=frontcover&img=1&zoom=1&imgtk=AFLRE70pwzDs7di2l10gDISoQ9eAYlDDUJS1_RaIoansAZS2oPOHM0lgxj2OLvAb1NL0SVyx1pSOFLfv42uuMYlhZ-obp-C4UmDKrFfSFa-0s-WQ-7qSDdxOPwZOueRQcl-W6enWgsKr&source=gbs_api",
-                "http://books.google.com/books/content?id=zyTCAlFPjgYC&printsec=frontcover&img=1&zoom=5&imgtk=AFLRE72jG1eJOZ2lnI3TNwKGK8uSV3h7Igy_0ObYNp5SbXjTlnYmPGxPA9joI2RSyx8AYuk56AmWnbA6NAAI4PxkdUNe6-5iLtoHUBp2abMknLzLezbbjCR8nXw2qaLb0qRPgVs2z9eC&source=gbs_api",
-                "Random House Publishing Group",
-                "2005-11-15",
-                50,
-                2,
-                3.5,
-                20);
+        Book book = new BookBuilder().setNoOfCopies(2).buildBook();
         bookService.add(book);
     }
 
@@ -76,24 +65,38 @@ public class CustomerApisIntegrationTest {
         HttpEntity<String> entity  = new HttpEntity<>(null, headers);
 
         //Act
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createUrlWithPort("/Book/zyTCAlFPjgYC/Order"), HttpMethod.PUT,
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createUrlWithPort("/books/zyTCAlFPjgYC/order"), HttpMethod.PUT,
                 entity, String.class);
 
         //Assert
         Assert.assertEquals(copy, responseEntity.getBody());
+        Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
     }
 
     @Test
-    public void ShouldAbleToReturnParticularCopyOfTheBook(){
+    public void ShouldReturn200HttpStatusCodeWhenParticularCopyOfTheBookIsSuccessfullyReturned(){
         //Arrange
         HttpEntity<String> entity = new HttpEntity<>(null, headers);
 
         //Act
-        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createUrlWithPort("/Book/Copy/zyTCAlFPjgYC:1/Return"), HttpMethod.PUT,
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createUrlWithPort("/books/copies/zyTCAlFPjgYC:1/return"), HttpMethod.PUT,
                 entity, String.class);
 
         //Assert
         Assert.assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
+    }
+
+    @Test
+    public void ShouldReturn404HttpStatusCodeWhenParticularCopyOfTheBookToBeReturnedIsNotFound(){
+        //Arrange
+        HttpEntity<String> entity = new HttpEntity<>(null, headers);
+
+        //Act
+        ResponseEntity<String> responseEntity = testRestTemplate.exchange(createUrlWithPort("/books/copies/zyTCAlFPjgYC:20/return"), HttpMethod.PUT,
+                entity, String.class);
+
+        //Assert
+        Assert.assertEquals(HttpStatus.NOT_FOUND, responseEntity.getStatusCode());
     }
 
     private String createUrlWithPort(String api) {

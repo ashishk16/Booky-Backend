@@ -11,34 +11,33 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public class MerchantController {
+@RequestMapping("/books")
+public class BookController {
     @Autowired
     BookService bookService;
 
     //Book Apis
-    @RequestMapping("/Book")
+    @GetMapping
     public List<Book> getAllBooks(){
         return bookService.getBooks();
     }
 
-    @RequestMapping("/Book/{id}")
+    @GetMapping("/{id}")
     public Book getBookById(@PathVariable String id){
         return bookService.getBookById(id);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "/Book")
+    @PostMapping
     public ResponseEntity<String> addBook(@RequestBody Book book){
-        if(ValidatePayload(book))
+        if(book.isValid())
         {
             if(bookService.add(book))
                 return ResponseEntity.status(HttpStatus.CREATED).build();
-            else
-                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/Book/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable String id){
         if(bookService.delete(id)) {
             return ResponseEntity.status(HttpStatus.OK).build();
@@ -46,22 +45,27 @@ public class MerchantController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
+    @PutMapping("/{id}/order")
+    public Copy orderBook(@PathVariable String id){
+        return bookService.orderBook(id);
+    }
+
     //Copy Apis
-    @RequestMapping("/Book/{id}/Copy")
+    @GetMapping("/{id}/copies")
     public List<Copy> getCopies(@PathVariable String id){
         return bookService.getCopiesByBookId(id);
     }
 
-    @RequestMapping("/Copy/{id}")
+    @GetMapping("/copies/{id}")
     public Copy getCopy(@PathVariable String id){
         return bookService.getCopyById(id);
     }
 
-    private boolean ValidatePayload(Book book) {
-        if( book.getId()!= null && book.getTitle()!=null && book.getAuthors()!=null && book.getCategories()!=null && book.getDescription()!=null
-                && book.getThumbnail()!=null && book.getSmallThumbnail()!=null && book.getPublisher()!=null && book.getPublishedDate()!=null &&
-                book.getPrice()!=0 && book.getNoOfCopies()!=0 && book.getAverageRating()!=0 && book.getRatingCount()!=0)
-            return true;
-        return false;
+    @PutMapping("/copies/{id}/return")
+    public ResponseEntity<String> returnBook(@PathVariable String id){
+        if(bookService.returnBook(id))
+            return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
+
 }

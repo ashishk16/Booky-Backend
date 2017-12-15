@@ -122,4 +122,12 @@ public class Book {
             newCopies.add(new Copy(id+":"+(i+1), CopyStatus.Available, this));
         copies = newCopies;
     }
+
+    public boolean isValid(){
+        if( this.getId()!= null && this.getTitle()!=null && this.getAuthors()!=null && this.getCategories()!=null && this.getDescription()!=null
+                && this.getThumbnail()!=null && this.getSmallThumbnail()!=null && this.getPublisher()!=null && this.getPublishedDate()!=null &&
+                this.getPrice()!=0 && this.getNoOfCopies()!=0 && this.getAverageRating()!=0 && this.getRatingCount()!=0)
+            return true;
+        return false;
+    }
 }

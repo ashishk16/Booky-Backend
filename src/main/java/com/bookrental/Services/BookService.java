@@ -1,5 +1,6 @@
 package com.bookrental.Services;
 
+import com.bookrental.Exceptions.ResourceNotFoundException;
 import com.bookrental.Models.Book;
 import com.bookrental.Models.Copy;
 import com.bookrental.Models.CopyStatus;
@@ -35,7 +36,10 @@ public class BookService {
     }
 
     public Book getBookById(String id) {
-        return bookRepository.findOne(id);
+        Book book = bookRepository.findOne(id);
+        if(book == null )
+            throw new ResourceNotFoundException(id, "book not found");
+        return book;
     }
 
     public Boolean add(Book book) {
